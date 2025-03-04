@@ -461,7 +461,7 @@ pub fn output<SPEC: Spec, EXT, DB: Database>(
 ) -> Result<ResultAndState, EVMError<DB::Error>> {
     let result = mainnet::output::<EXT, DB>(context, frame_result)?;
 
-    if result.result.is_revert() {
+    if !result.result.is_success() {
         debug!(target: "narumi", ?result, "evm tx reverted");
     }
 

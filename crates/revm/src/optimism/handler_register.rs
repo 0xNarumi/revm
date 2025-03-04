@@ -19,6 +19,7 @@ use revm_precompile::PrecompileSpecId;
 use std::{boxed::Box, string::ToString, sync::Arc};
 
 use super::l1block::OPERATOR_FEE_RECIPIENT;
+use tracing::debug;
 
 pub fn optimism_handle_register<DB: Database, EXT>(handler: &mut EvmHandler<'_, EXT, DB>) {
     spec_to_generic!(handler.cfg.spec_id, {
@@ -459,6 +460,10 @@ pub fn output<SPEC: Spec, EXT, DB: Database>(
     frame_result: FrameResult,
 ) -> Result<ResultAndState, EVMError<DB::Error>> {
     let result = mainnet::output::<EXT, DB>(context, frame_result)?;
+
+    if result.result.is_revert() {
+        debug!(target: "narumi", ?result, "evm tx reverted");
+    }
 
     if result.result.is_halt() {
         // Post-regolith, if the transaction is a deposit transaction and it halts,

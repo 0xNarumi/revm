@@ -15,6 +15,7 @@ use crate::{
 };
 use core::fmt;
 use std::{boxed::Box, vec::Vec};
+use tracing::debug;
 
 /// EVM call stack limit.
 pub const CALL_STACK_LIMIT: u64 = 1024;
@@ -152,14 +153,23 @@ impl<'a, EXT, DB: Database> Evm<'a, EXT, DB> {
                     // Insert result to the top frame.
                     match result {
                         FrameResult::Call(outcome) => {
+                            if outcome.result.is_revert() {
+                                debug!(target: "narumi", ?outcome, "frame result");
+                            }
                             // return_call
                             exec.insert_call_outcome(ctx, stack_frame, &mut shared_memory, outcome)?
                         }
                         FrameResult::Create(outcome) => {
+                            if outcome.result.is_revert() {
+                                debug!(target: "narumi", ?outcome, "frame result");
+                            }                            
                             // return_create
                             exec.insert_create_outcome(ctx, stack_frame, outcome)?
                         }
                         FrameResult::EOFCreate(outcome) => {
+                            if outcome.result.is_revert() {
+                                debug!(target: "narumi", ?outcome, "frame result");
+                            }                            
                             // return_eofcreate
                             exec.insert_eofcreate_outcome(ctx, stack_frame, outcome)?
                         }

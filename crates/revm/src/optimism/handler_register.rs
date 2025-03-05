@@ -461,9 +461,9 @@ pub fn output<SPEC: Spec, EXT, DB: Database>(
 ) -> Result<ResultAndState, EVMError<DB::Error>> {
     let result = mainnet::output::<EXT, DB>(context, frame_result)?;
 
-    if !result.result.is_success() {
-        debug!(target: "narumi", ?result, "evm tx reverted");
-    }
+    // if !result.result.is_success() {
+    //     debug!(target: "narumi", ?result, "evm tx reverted");
+    // }
 
     if result.result.is_halt() {
         // Post-regolith, if the transaction is a deposit transaction and it halts,

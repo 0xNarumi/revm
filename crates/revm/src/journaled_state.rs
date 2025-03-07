@@ -10,7 +10,7 @@ use crate::{
 };
 use core::mem;
 use std::vec::Vec;
-
+use tracing::debug;
 /// A journal of state changes internal to the EVM.
 ///
 /// On each additional call, the depth of the journaled state is increased (`depth`) and a new journal is added. The journal contains every state change that happens within that call, making it possible to revert changes made in a specific call.
@@ -703,7 +703,7 @@ impl JournaledState {
                 (value, true)
             }
         };
-
+        debug!(target:"sload", ?address, ?key, ?value, ?is_cold, ?is_newly_created, "sload info");
         if is_cold {
             // add it to journal as cold loaded.
             self.journal

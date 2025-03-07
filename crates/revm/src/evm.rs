@@ -15,7 +15,6 @@ use crate::{
 };
 use core::fmt;
 use std::{boxed::Box, vec::Vec};
-use tracing::debug;
 
 /// EVM call stack limit.
 pub const CALL_STACK_LIMIT: u64 = 1024;

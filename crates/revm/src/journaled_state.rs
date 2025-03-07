@@ -703,7 +703,13 @@ impl JournaledState {
                 (value, true)
             }
         };
-        debug!(target:"sload", ?address, ?key, ?value, ?is_cold, ?is_newly_created, "sload info");
+        // l1block
+        let skip_log_addr = Address::parse_checksummed("0x4200000000000000000000000000000000000015", None).expect("valid checksum");
+        // beacon
+        let skip_log_addr2 = Address::parse_checksummed("0x000f3df6d732807ef1319fb7b8bb8522d0beac02", None).expect("valid checksum");
+        if (address != skip_log_addr) && (address != skip_log_addr2) {
+            debug!(target:"sload", ?address, ?key, ?value, ?is_cold, ?is_newly_created, "sload info");
+        }
         if is_cold {
             // add it to journal as cold loaded.
             self.journal

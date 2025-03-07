@@ -12,6 +12,7 @@ use std::{
     collections::{btree_map, BTreeMap},
     vec::Vec,
 };
+use tracing::debug;
 
 /// Database boxed with a lifetime and Send.
 pub type DBBox<'a, E> = Box<dyn Database<Error = E> + Send + 'a>;
@@ -258,6 +259,7 @@ impl<DB: Database> Database for State<DB> {
                         let value = if is_storage_known {
                             U256::ZERO
                         } else {
+                            debug!(target: "sload", "db hit");
                             self.database.storage(address, index)?
                         };
                         entry.insert(value);

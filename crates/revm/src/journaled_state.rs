@@ -683,6 +683,7 @@ impl JournaledState {
         // assume acc is warm
         let account = self.state.get_mut(&address).unwrap();
         // only if account is created in this tx we can assume that storage is empty.
+        let mut storage_hit = false;
         let is_newly_created = account.is_created();
         let (value, is_cold) = match account.storage.entry(key) {
             Entry::Occupied(occ) => {
@@ -695,6 +696,7 @@ impl JournaledState {
                 let value = if is_newly_created {
                     U256::ZERO
                 } else {
+                    storage_hit = true;
                     db.storage(address, key).map_err(EVMError::Database)?
                 };
 
@@ -708,7 +710,7 @@ impl JournaledState {
         // beacon
         let skip_log_addr2: Address = "0x000f3df6d732807ef1319fb7b8bb8522d0beac02".parse().unwrap();
         if (address != skip_log_addr) && (address != skip_log_addr2) {
-            debug!(target:"sload", ?address, ?key, ?value, ?is_cold, ?is_newly_created, "sload info");
+            debug!(target:"sload", ?address, ?key, ?value, ?storage_hit, "sload info");
         }
         if is_cold {
             // add it to journal as cold loaded.

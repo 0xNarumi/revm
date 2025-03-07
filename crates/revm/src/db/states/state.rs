@@ -241,10 +241,11 @@ impl<DB: Database> Database for State<DB> {
         };
         res
     }
-
+    #[track_caller]
     fn storage(&mut self, address: Address, index: U256) -> Result<U256, Self::Error> {
         // Account is guaranteed to be loaded.
         // Note that storage from bundle is already loaded with account.
+        let caller = std::panic::Location::caller();
         if let Some(account) = self.cache.accounts.get_mut(&address) {
             // account will always be some, but if it is not, U256::ZERO will be returned.
             let is_storage_known = account.status.is_storage_known();
@@ -259,7 +260,7 @@ impl<DB: Database> Database for State<DB> {
                         let value = if is_storage_known {
                             U256::ZERO
                         } else {
-                            debug!(target: "sload", "db hit");
+                            debug!(target: "sload", caller_file=?caller.file(), line=?caller.line() ,"db hit");
                             self.database.storage(address, index)?
                         };
                         entry.insert(value);

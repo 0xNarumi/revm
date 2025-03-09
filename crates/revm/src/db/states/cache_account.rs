@@ -4,7 +4,7 @@ use super::{
 };
 use revm_interpreter::primitives::{AccountInfo, U256};
 use revm_precompile::HashMap;
-
+use tracing::debug;
 /// Cache account contains plain state that gets updated
 /// at every transaction when evm output is applied to CacheState.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -299,6 +299,7 @@ impl CacheAccount {
             .map(AccountInfo::has_no_code_and_nonce)
             .unwrap_or_default();
         self.status = self.status.on_changed(had_no_nonce_and_code);
+        debug!(target: "cache", ?previous_status, current_status=?self.status, ?had_no_nonce_and_code);
         self.account = Some(changed_account);
 
         TransitionAccount {

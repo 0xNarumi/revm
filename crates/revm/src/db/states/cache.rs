@@ -5,6 +5,7 @@ use revm_interpreter::primitives::{
     Account, AccountInfo, Address, Bytecode, EvmState, HashMap, B256,
 };
 use std::vec::Vec;
+use tracing::debug;
 
 /// Cache state contains both modified and original values.
 ///
@@ -158,6 +159,7 @@ impl CacheState {
                 this_account.touch_create_pre_eip161(changed_storage)
             }
         } else {
+            debug!(target: "cache", ?address, "account status change");
             Some(this_account.change(account.info, changed_storage))
         }
     }

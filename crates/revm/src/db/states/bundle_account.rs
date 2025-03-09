@@ -4,6 +4,7 @@ use super::{
 };
 use revm_interpreter::primitives::{AccountInfo, U256};
 use revm_precompile::HashMap;
+use tracing::debug;
 
 /// Account information focused on creating of database changesets
 /// and Reverts.
@@ -59,6 +60,7 @@ impl BundleAccount {
         if slot.is_some() {
             slot
         } else if self.status.is_storage_known() {
+            debug!(target: "bundle", status=?self.status, "storage is known");
             Some(U256::ZERO)
         } else {
             None

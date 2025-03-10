@@ -195,10 +195,14 @@ impl<DB: Database> State<DB> {
                     }
                     Some(acc) => CacheAccount::new_loaded(acc, HashMap::default()),
                 };
+                debug!(target: "load_cache", ?address, status=?account.status, "cache loaded vacant");
                 Ok(entry.insert(account))
             }
-            hash_map::Entry::Occupied(entry) => Ok(entry.into_mut()),
-        }
+            hash_map::Entry::Occupied(entry) =>{
+                debug!(target: "load_cache", ?address, status=?entry.get().status, "cache loaded occupied"); 
+                Ok(entry.into_mut())
+            },
+        }   
     }
 
     // TODO make cache aware of transitions dropping by having global transition counter.
@@ -260,7 +264,6 @@ impl<DB: Database> Database for State<DB> {
                         let value = if is_storage_known {
                             U256::ZERO
                         } else {
-                            debug!(target: "sload", caller_file=?caller.file(), line=?caller.line() ,"db hit");
                             self.database.storage(address, index)?
                         };
                         entry.insert(value);

@@ -4,7 +4,7 @@ use super::{
 use revm_interpreter::primitives::{
     Account, AccountInfo, Address, Bytecode, EvmState, HashMap, B256,
 };
-use std::vec::Vec;
+use std::{collections::HashSet, vec::Vec};
 use tracing::debug;
 
 /// Cache state contains both modified and original values.
@@ -159,7 +159,10 @@ impl CacheState {
                 this_account.touch_create_pre_eip161(changed_storage)
             }
         } else {
-            debug!(target: "cache", ?address, "account status change");
+            let skip_addr_vec: HashSet<Address> = vec!["0x420000000000000000000000000000000000001b", "0x4200000000000000000000000000000000000011", "0x420000000000000000000000000000000000001a", "0x4200000000000000000000000000000000000019"].into_iter().map(|x| x.parse().unwrap()).collect();
+            if !skip_addr_vec.contains(&address) {
+                debug!(target: "cache_diff", ?address, storage=?this_account.account.as_ref().unwrap().storage, "account change");
+            }
             Some(this_account.change(account.info, changed_storage))
         }
     }

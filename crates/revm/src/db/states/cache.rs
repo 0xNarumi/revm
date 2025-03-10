@@ -160,7 +160,7 @@ impl CacheState {
             }
         } else {
             let skip_addr_vec: HashSet<Address> = vec!["0x420000000000000000000000000000000000001b", "0x4200000000000000000000000000000000000011", "0x420000000000000000000000000000000000001a", "0x4200000000000000000000000000000000000019"].into_iter().map(|x| x.parse().unwrap()).collect();
-            if !skip_addr_vec.contains(&address) {
+            if !skip_addr_vec.contains(&address) && this_account.account.is_some() {
                 debug!(target: "cache_diff", ?address, storage=?this_account.account.as_ref().unwrap().storage, "account change");
             }
             Some(this_account.change(account.info, changed_storage))
